@@ -162,30 +162,6 @@ plot_PCA <- function() {
   return(p)
 }
 
-plot_PCA2 <- function() {
-  
-  set <- na.omit(select(train_set, c(Age, Fare, SibSp, Parch, Pclass, Survived)))
-  set$Survived <- factor(x = set$Survived, levels = c(1,0), labels = c("Lived", "Died"))
-  
-  set1 <- select(set, -Survived)
-  set.pca <- prcomp(x = set1, scale. = TRUE)
-  View(set.pca)
-  
-  pcPlus <- mutate(as.data.frame(set.pca$x), Survived = set$Survived)
-  View(pcPlus)
-  
-  prop_var <- round(set.pca$sdev ^ 2 / sum(set.pca$sdev ^ 2), digits = 3)
-  View(prop_var)
-  
-  p <- ggplot(pcPlus, aes(x = PC1, y = PC2, col = Survived)) +
-    geom_point() + 
-    labs(x = paste0("PC1 (", prop_var[1], ")"), 
-         y = paste0("PC2 (", prop_var[2], ")")) +
-    theme(legend.position="top")
-  
-  return(p)
-}
-
 purchase_ticket <- function(pclass, sex, age, fare, parch, sibSp, ML_algorithm) {
   source_python("titanic_ML.py")
   result <- caller_from_R(pclass, sex, age, fare, parch, sibSp, ML_algorithm, train_set)
