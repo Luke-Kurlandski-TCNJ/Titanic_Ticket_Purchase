@@ -5,14 +5,22 @@ library(shiny)
 library(gridExtra)
 library(tidyr)
 library(tibble)
+library(dslabs)
 library(reticulate)
+
+# Tell reticulate to use this virtual conda environemnt.
+reticulate::use_condaenv("env_titanic", required = TRUE)
+# Print the configurations of python version.
+#print(reticulate::py_config())
 
 # Data set of all passengers on the titanic.
 train_set <- read.csv("datasets/train.csv") %>% 
   mutate(Alone = mapply(determine_alone, SibSp, Parch)) %>%
-  mutate(AgeCat = mapply(determine_age_category, age = Age, bin = 5)) %>%
-  mutate(FareCat = mapply(determine_fare_category, fare = Fare, bin = 10)) 
-  #FIXME: replace all empty cells with NA
+  #mutate(AgeCat = mapply(determine_age_category, age = Age, bin = 5)) %>%
+  #mutate(FareCat = mapply(determine_fare_category, fare = Fare, bin = 10)) 
+  mutate(AgeCat = mapply(determine_age_category, age = Age)) %>%
+  mutate(FareCat = mapply(determine_fare_category, fare = Fare)) 
+  #FIXME: replace all empty cells with NA, and fix mutate()
 
 # Useful vector mapping the options to display to their column names.
 vars_to_colnames <- c("Sex"="Sex", "Number of Siblings/Spouses" = "SibSp", 
@@ -35,6 +43,7 @@ data_vars <- colnames(select(train_set, -PassengerId, -Survived, -Age, -Name, -F
 
 # Apply an age category to an age.
 determine_age_category <- function(age, bin = 5) {
+  bin <- 5; #FIXME: comment out
   if (is.na(age) || age=="")
     return(NA)
   else
@@ -43,6 +52,7 @@ determine_age_category <- function(age, bin = 5) {
 
 # Apply a fare category to a fare.
 determine_fare_category <- function(fare, bin = 10) {
+  bin <- 10; #FIXME: comment out
   if (is.na(fare) || fare=="")
     return(NA)
   else
@@ -124,6 +134,54 @@ produce_chart_probabilities <- function(variable, statistic, survival_stats) {
     # Categorical labels and color.
     labs(x = display_vars[match(variable, vars_to_colnames)], y = "Probibility of Survival", color = "Legend")  +
     scale_fill_manual(name = "Legend", values = colors)
+  
+  return(p)
+}
+
+# Return plot of principle component analysis.
+plot_PCA <- function() {
+  
+  set <- na.omit(select(train_set, c(Age, Fare, SibSp, Parch, Pclass, Survived)))
+  set$Survived <- factor(x = set$Survived, levels = c(1,0), labels = c("Lived", "Died"))
+  
+  set1 <- select(set, -Survived)
+  set.pca <- prcomp(x = set1, scale. = TRUE)
+  
+  pcPlus <- mutate(as.data.frame(set.pca$x), Survived = set$Survived)
+  View(pcPlus)
+  
+  prop_var <- round(set.pca$sdev ^ 2 / sum(set.pca$sdev ^ 2), digits = 3)
+  View(prop_var)
+  
+  p <- ggplot(pcPlus, aes(x = PC1, y = PC2, col = Survived)) +
+    geom_point() + 
+    labs(x = paste0("PC1 (", prop_var[1], ")"), 
+         y = paste0("PC2 (", prop_var[2], ")")) +
+    theme(legend.position="top")
+  
+  return(p)
+}
+
+plot_PCA2 <- function() {
+  
+  set <- na.omit(select(train_set, c(Age, Fare, SibSp, Parch, Pclass, Survived)))
+  set$Survived <- factor(x = set$Survived, levels = c(1,0), labels = c("Lived", "Died"))
+  
+  set1 <- select(set, -Survived)
+  set.pca <- prcomp(x = set1, scale. = TRUE)
+  View(set.pca)
+  
+  pcPlus <- mutate(as.data.frame(set.pca$x), Survived = set$Survived)
+  View(pcPlus)
+  
+  prop_var <- round(set.pca$sdev ^ 2 / sum(set.pca$sdev ^ 2), digits = 3)
+  View(prop_var)
+  
+  p <- ggplot(pcPlus, aes(x = PC1, y = PC2, col = Survived)) +
+    geom_point() + 
+    labs(x = paste0("PC1 (", prop_var[1], ")"), 
+         y = paste0("PC2 (", prop_var[2], ")")) +
+    theme(legend.position="top")
   
   return(p)
 }

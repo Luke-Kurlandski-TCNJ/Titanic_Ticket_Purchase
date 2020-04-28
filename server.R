@@ -46,8 +46,12 @@ server <- function(input, output) {
   })
   
   # Output the survival_stats table as part of the graphs and plots interface.
-  output$table <- renderTable({
+  output$survival_table <- renderTable({
     survival_stats()
+  })
+  
+  output$dimensionality_reduction <- renderPlot({
+    plot_PCA()
   })
   
   # Help tab for plots and interface.

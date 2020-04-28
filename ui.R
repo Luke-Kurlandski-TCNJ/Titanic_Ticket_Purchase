@@ -14,7 +14,7 @@ ui <- fluidPage(
       sidebarLayout(
         sidebarPanel(
           # Variables to plot.
-          checkboxGroupInput(inputId="variable", label="Plot Survival vs Variables", 
+          checkboxGroupInput(inputId="variable", label="Select Features", 
                              choices=vars_to_colnames, selected="Sex"),
           numericInput(inputId = "bins_for_age", label = "Width of an Age Category (check/uncheck Age Box)", value = 5),
           numericInput(inputId = "bins_for_fare", label = "Width of an Fare Category (check/uncheck Fare Box)", value = 10),
@@ -24,12 +24,18 @@ ui <- fluidPage(
         # Main panel to display graphs.
         mainPanel(
           tabsetPanel(type = "tabs",
-            tabPanel("Plots", 
+            tabPanel("Plot Survival vs Features", 
               radioButtons(inputId = "type_plots", label = "Statistics to View", choices = display_stats, selected = "nums"),
               plotOutput("variable_vs_survival")),
             
-            tabPanel("Tables", 
-              tableOutput("table")),
+            tabPanel("Survival Tables", 
+              tableOutput("survival_table")),
+            
+            tabPanel("Dimensionality Reduction Analysis",
+              radioButtons(inputId = "type_reduction", selected = "principle_comps",
+                           label = "Type of Reduction (selection from left side panel will be removed from analysis)", 
+                           choices = c("Principle Comonents" = "principle_comps", "UMAP" = "umap")),
+              plotOutput("dimensionality_reduction")),
             
             tabPanel("Help", 
               textOutput("help_plots"))
