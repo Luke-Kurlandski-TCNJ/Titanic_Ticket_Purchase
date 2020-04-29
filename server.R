@@ -50,8 +50,20 @@ server <- function(input, output) {
     survival_stats()
   })
   
-  output$dimensionality_reduction <- renderPlot({
-    plot_PCA()
+  output$dimensionality_reduction_plot <- renderPlot({
+    if (input$type_reduction == "principle_comps")
+      p <- plot_PCA(input$variable)
+    if (input$type_reduction == "umap")
+      p <- plot_UMAP(input$variable)
+    p
+  })
+  
+  output$dimensionality_reduction_table <- renderTable({
+    if (input$type_reduction == "principle_comps")
+      t <- dataframe_PCA(input$variable)
+    if (input$type_reduction == "umap")
+      t <- dataframe_UMAP(input$variable)
+    t
   })
   
   # Help tab for plots and interface.

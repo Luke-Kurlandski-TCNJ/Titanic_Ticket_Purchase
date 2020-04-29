@@ -24,18 +24,26 @@ ui <- fluidPage(
         # Main panel to display graphs.
         mainPanel(
           tabsetPanel(type = "tabs",
-            tabPanel("Plot Survival vs Features", 
+            tabPanel("Survival vs Features, Plots", 
               radioButtons(inputId = "type_plots", label = "Statistics to View", choices = display_stats, selected = "nums"),
               plotOutput("variable_vs_survival")),
             
-            tabPanel("Survival Tables", 
+            tabPanel("Survival vs Features, Table", 
               tableOutput("survival_table")),
             
-            tabPanel("Dimensionality Reduction Analysis",
-              radioButtons(inputId = "type_reduction", selected = "principle_comps",
-                           label = "Type of Reduction (selection from left side panel will be removed from analysis)", 
-                           choices = c("Principle Comonents" = "principle_comps", "UMAP" = "umap")),
-              plotOutput("dimensionality_reduction")),
+            tabPanel("Dimension Reduction, Plots",
+              radioButtons(inputId = "type_reduction",
+                           label = "Type of Reduction (select two or more quantatiative features)", 
+                           choices = c("Principle Components" = "principle_comps", "UMAP" = "umap"), 
+                           selected = "principle_comps"),
+              plotOutput("dimensionality_reduction_plot")),
+            
+            tabPanel("Dimension Reduction, Table",
+                     radioButtons(inputId = "type_reduction", 
+                                  label = "Type of Reduction", 
+                                  choices = c("Principle Components" = "principle_comps", "UMAP" = "umap"), 
+                                  selected = "principle_comps"),
+                     tableOutput("dimensionality_reduction_table")),
             
             tabPanel("Help", 
               textOutput("help_plots"))
