@@ -1,0 +1,13 @@
+name: Titanic_Survival
+title: Titanic_Survival
+username:
+account: luke-kurlandski
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2242288
+bundleId: 3106871
+url: https://luke-kurlandski.shinyapps.io/Titanic_Survival/
+when: 1588696500.46737
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: pickledDF.pkl|titanic_ML.py|env_titan
